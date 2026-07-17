@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Roboto:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="app-header">
+    <div class="brand">
+      <span class="mark">Resume Builder</span>
+      <span class="tag">Draft &amp; polish, ai-assisted</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn ghost" id="settingsBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.04H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1.04-1.56V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1.04 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.56 1.04H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.56 1.04z"/></svg>
+        AI settings
+      </button>
+      <button class="btn ghost" id="atsScoreBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Check ATS Score
+      </button>
+      <button class="btn ghost" id="resetBtn">Start over</button>
+      <button class="btn ghost" id="exportDocxBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        Export as DOCX
+      </button>
+      <button class="btn primary" id="printBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Export as PDF
+      </button>
+    </div>
+  </header>
+
+  <div class="modal-overlay" id="settingsModal" hidden>
+    <div class="modal">
+      <h3>AI settings</h3>
+      <p>
+        The "Sharpen" and "Strengthen" buttons call the Claude API directly from your browser.
+        Paste an API key from <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a> to enable them.
+        The key is stored only in this browser's local storage — it's never sent anywhere except Anthropic's API.
+      </p>
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
+      <div class="modal-actions">
+        <span class="key-state" id="keyState" style="margin-right:auto;"><span class="key-dot" id="keyDot"></span><span id="keyStateText">No key saved</span></span>
+        <button class="btn ghost" id="clearKeyBtn">Clear</button>
+        <button class="btn ghost" id="closeSettingsBtn">Close</button>
+        <button class="btn primary" id="saveKeyBtn">Save key</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal-overlay" id="atsModal" hidden>
+    <div class="modal ats-modal">
+      <h3>ATS Score Checker</h3>
+      <p>Estimates how well your resume content would parse in a typical Applicant Tracking System, based on the data you've entered.</p>
+
+      <div class="ats-score-wrap">
+        <div class="ats-circle-wrap">
+          <svg viewBox="0 0 120 120" class="ats-circle">
+            <circle cx="60" cy="60" r="52" class="ats-circle-track"></circle>
+            <circle cx="60" cy="60" r="52" class="ats-circle-fill" id="atsCircleFill"></circle>
+          </svg>
+          <div class="ats-circle-label">
+            <span class="ats-circle-score" id="atsScoreNumber">0</span>
+            <span class="ats-circle-max">/ 100</span>
+          </div>
+        </div>
+        <div class="ats-breakdown" id="atsBreakdown"></div>
+      </div>
+
+      <div class="ats-suggestions" id="atsSuggestions"></div>
+
+      <div class="modal-actions">
+        <button class="btn ghost" id="closeAtsBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <nav class="spine" id="spine" aria-label="Section progress">
+      <div class="spine-track" id="spineTrack">
+        <div class="spine-fill" id="spineFill"></div>
+      </div>
+    </nav>
+
+    <div class="form-panel" id="formPanel">
+
+      <section class="field-section" id="sec-contact">
+        <div class="section-head"><h2>Contact</h2></div>
+        <div class="grid2">
+          <div class="field"><label for="f-name">Full name</label><input type="text" id="f-name" placeholder="Enter your full name"></div>
+          <div class="field"><label for="f-target">Target role</label><input type="text" id="f-target" placeholder="Enter your target role"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label for="f-email">Email</label><input type="email" id="f-email" placeholder="Enter your email"></div>
+          <div class="field"><label for="f-phone">Phone</label><input type="tel" id="f-phone" placeholder="Enter your phone number"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label for="f-location">Location</label><input type="text" id="f-location" placeholder="Enter your location"></div>
+        </div>
+        <div class="field">
+          <label>Profile photo (optional)</label>
+          <div class="photo-upload">
+            <div class="photo-preview" id="photoPreview" aria-hidden="true"></div>
+            <div class="photo-upload-actions">
+              <label class="btn ghost" for="f-photo">Choose image</label>
+              <button class="btn ghost" id="removePhotoBtn" type="button" hidden>Remove</button>
+            </div>
+            <input type="file" id="f-photo" accept="image/*" hidden>
+          </div>
+          <p class="hint">Shown on all templates.</p>
+        </div>
+        <div class="field" style="margin-bottom:6px;">
+          <label>Social &amp; portfolio links</label>
+          <div id="linksList"></div>
+          <button class="add-btn" id="addLink" type="button">+ Add a link</button>
+        </div>
+      </section>
+
+      <section class="field-section" id="sec-summary">
+        <div class="section-head"><h2>Summary</h2></div>
+        <div class="field">
+          <label for="f-summary">Two or three sentences on who you are and what you bring</label>
+          <textarea id="f-summary" placeholder="Add a short summary of your professional background"></textarea>
+        </div>
+        <div class="ai-row">
+          <span class="ai-status" id="summaryStatus"></span>
+          <button class="btn ai" id="summaryAiBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="3"/></svg>
+            Sharpen with AI
+          </button>
+        </div>
+      </section>
+
+      <section class="field-section" id="sec-experience">
+        <div class="section-head"><h2>Experience</h2></div>
+        <div id="experienceList"></div>
+        <button class="add-btn" id="addExperience">+ Add a role</button>
+      </section>
+
+      <section class="field-section" id="sec-education">
+        <div class="section-head"><h2>Education</h2></div>
+        <div id="educationList"></div>
+        <button class="add-btn" id="addEducation">+ Add a school</button>
+      </section>
+
+      <section class="field-section" id="sec-skills" style="border-bottom:none;">
+        <div class="section-head"><h2>Skills</h2></div>
+        <div class="field">
+          <label for="f-skills">Comma-separated</label>
+          <textarea id="f-skills" style="min-height:56px;" placeholder="List your key skills"></textarea>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="preview-wrap">
+      <div class="preview-toolbar">
+        <span class="lbl">Live preview</span>
+        <span class="completeness" id="completenessLabel">0% complete</span>
+      </div>
+      <div class="template-picker" id="templatePicker">
+        <button class="tpl-btn" data-tpl="classic"><span class="tpl-swatch tpl-swatch-classic"></span>Classic</button>
+        <button class="tpl-btn" data-tpl="modern"><span class="tpl-swatch tpl-swatch-modern"></span>Modern</button>
+        <button class="tpl-btn" data-tpl="minimal"><span class="tpl-swatch tpl-swatch-minimal"></span>Minimal</button>
+        <button class="tpl-btn" data-tpl="sidebar"><span class="tpl-swatch tpl-swatch-sidebar"></span>Sidebar</button>
+      </div>
+      <div class="style-controls" id="styleControls">
+        <div class="style-group">
+          <span class="style-label">Color</span>
+          <div class="color-swatches" id="colorSwatches">
+            <button class="color-swatch" data-theme="brass" style="--sw:#A9773F" aria-label="Brass"></button>
+            <button class="color-swatch" data-theme="blue" style="--sw:#2F5AA8" aria-label="Blue"></button>
+            <button class="color-swatch" data-theme="green" style="--sw:#3B7A57" aria-label="Green"></button>
+            <button class="color-swatch" data-theme="purple" style="--sw:#6E4F9E" aria-label="Purple"></button>
+            <button class="color-swatch" data-theme="black" style="--sw:#1B2A4A" aria-label="Black"></button>
+            <button class="color-swatch" data-theme="red" style="--sw:#A9443A" aria-label="Red"></button>
+          </div>
+        </div>
+        <div class="style-group">
+          <label class="style-label" for="fontSelect">Font</label>
+          <select id="fontSelect" class="font-select">
+            <option value="default">Match template</option>
+            <option value="inter">Inter</option>
+            <option value="roboto">Roboto</option>
+            <option value="poppins">Poppins</option>
+            <option value="newsreader">Newsreader</option>
+            <option value="georgia">Georgia</option>
+            <option value="times">Times New Roman</option>
+          </select>
+        </div>
+      </div>
+      <div class="paper tpl-classic" id="paper"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
