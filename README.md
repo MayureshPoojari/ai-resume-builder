@@ -29,10 +29,15 @@ An AI-powered Resume Builder designed to help users create professional, ATS-fri
 * JavaScript (ES6)
 
 ## 📸 Screenshots
+<img width="1986" height="2454" alt="image" src="https://github.com/user-attachments/assets/1db6279b-06ad-4b0e-99dd-f8cc6d628c58" />
+<img width="3768" height="1836" alt="image" src="https://github.com/user-attachments/assets/6bbb252d-f3d4-4920-b88a-a89d368f600d" />
+<img width="3768" height="1836" alt="image" src="https://github.com/user-attachments/assets/c0941446-4a05-43ca-8d94-63db17522682" />
+
+
 
 ### Resume Builder Interface
+<img width="1905" height="2439" alt="image" src="https://github.com/user-attachments/assets/2127bf2b-8524-45f5-a03b-d9d9af0c9895" />
 
-*Add your project screenshots here.*
 
 ## 🚀 Getting Started
 
@@ -58,8 +63,6 @@ ai-resume-builder/
 ├── index.html
 ├── style.css
 ├── script.js
-├── assets/
-├── screenshots/
 └── README.md
 ```
 
